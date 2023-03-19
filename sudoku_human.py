@@ -168,6 +168,7 @@ def check_for_squares_in_line():
             print(box_options)
             for num in range(1, 10):
                 if 1 < box_options[num] < 4:
+                    pass
 
 
 
