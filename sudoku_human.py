@@ -10,7 +10,6 @@ for i in range(1, 12):
         file.readline()
         continue
     file_line = file.readline()
-    # print(re.split('[ |]', file_line))
     sudoku[row_num] = [{'original': int(val), 'val': int(val), 'options': dict(map(lambda x: (x, True), range(1, 10)))}
                        for val in re.split('[ |]', file_line.strip())]
     row_num += 1
@@ -52,13 +51,20 @@ def print_sudoku():
             print("-----+-----+-----")
     print()
 
+
 def print_options():
     for line_count, line in enumerate(sudoku, start=1):
         for i in range(0, 9, 3):
             for square_count, square in enumerate(line, start=1):
-                for j in range(1, 4):
-                    print(i+j if square["options"][i+j] else ' ', end='')
-                print(' ', end='')
+                if square["val"]:
+                    if i == 3:
+                        print(f"~{square['val']}~", end=' ')
+                    else:
+                        print("~~~", end=' ')
+                else:
+                    for j in range(1, 4):
+                        print(i+j if square["options"][i+j] else ' ', end='')
+                    print(' ', end='')
                 if square_count % 3 == 0 and square_count != 9:
                     print('| ', end='')
             print()
@@ -70,7 +76,6 @@ def print_options():
 
 print_sudoku()
 print_options()
-# print(sudoku)
 
 
 def check_clash(line_num, column_num):
@@ -117,7 +122,7 @@ def is_only_square_in_row(i, j):
         if val:
             other_square = False
             for k in range(9):
-                if k != i and sudoku[k][j]['options'][option]:
+                if k != j and sudoku[i][k]['options'][option]:
                     other_square = True
                     break
             if not other_square:
@@ -130,7 +135,7 @@ def is_only_square_in_column(i, j):
         if val:
             other_square = False
             for k in range(9):
-                if k != j and sudoku[i][k]['options'][option]:
+                if k != i and sudoku[k][j]['options'][option]:
                     other_square = True
                     break
             if not other_square:
@@ -164,7 +169,6 @@ def check_for_squares_in_line():
                     for num in range(1, 10):
                         if sudoku[box_line+i][box_column+j]['options'][num]:
                             box_options[num] += 1
-            # print(box_options)
             for num in range(1, 10):
                 if 1 < box_options[num] < 4:
                     line_num = -1
@@ -185,22 +189,12 @@ def check_for_squares_in_line():
                                 else:
                                     column_num = -2
                     if line_num > -1:
-                        # print(num, box_line, line_num)
                         for i in range(9):
                             if i not in line_columns:
-                                if sudoku[box_line + line_num][i]['options'][num]:
-                                    print_sudoku()
-                                    print(box_line + line_num, i, num)
-                                # print(box_line + line_num, i, sudoku[box_line + line_num][i]['options'][num])
                                 sudoku[box_line + line_num][i]['options'][num] = False
                     elif column_num > -1:
-                        # print(num, box_column, column_num)
                         for i in range(9):
                             if i not in column_lines:
-                                if sudoku[i][box_column + column_num]['options'][num]:
-                                    print_sudoku()
-                                    print(i, box_column + column_num, num)
-                                # print(box_column + column_num, i, sudoku[i][box_column + column_num]['options'][num])
                                 sudoku[i][box_column + column_num]['options'][num] = False
 
 
@@ -218,8 +212,9 @@ while not is_solved() and ittrs > 0:
     check_for_squares_in_line()
 
 
+print(ittrs)
 print_sudoku()
-print_options()
+# print_options()
 
 
 def print_errors():
