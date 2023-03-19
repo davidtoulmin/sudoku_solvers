@@ -156,20 +156,52 @@ def is_only_square_in_box(i, j):
 
 
 def check_for_squares_in_line():
-    for box_row in range(0, 9, 3):
+    for box_line in range(0, 9, 3):
         for box_column in range(0, 9, 3):
             box_options = dict(map(lambda x: (x, 0), range(1, 10)))
             for i in range(3):
                 for j in range(3):
                     for num in range(1, 10):
-                        if sudoku[box_row+i][box_column+j]['options'][num]:
+                        if sudoku[box_line+i][box_column+j]['options'][num]:
                             box_options[num] += 1
-                    # print(sudoku[box_row+i][box_column+j]['val'], end='')
-            print(box_options)
+            # print(box_options)
             for num in range(1, 10):
                 if 1 < box_options[num] < 4:
-                    pass
-
+                    line_num = -1
+                    line_columns = []
+                    column_num = -1
+                    column_lines = []
+                    for i in range(3):
+                        for j in range(3):
+                            if sudoku[box_line+i][box_column+j]['options'][num]:
+                                if line_num == i or line_num == -1:
+                                    line_num = i
+                                    line_columns.append(box_column + j)
+                                else:
+                                    line_num = -2
+                                if column_num == j or column_num == -1:
+                                    column_num = j
+                                    column_lines.append(box_line + i)
+                                else:
+                                    column_num = -2
+                    if line_num > -1:
+                        # print(num, box_line, line_num)
+                        for i in range(9):
+                            if i not in line_columns:
+                                if sudoku[box_line + line_num][i]['options'][num]:
+                                    print_sudoku()
+                                    print(box_line + line_num, i, num)
+                                # print(box_line + line_num, i, sudoku[box_line + line_num][i]['options'][num])
+                                sudoku[box_line + line_num][i]['options'][num] = False
+                    elif column_num > -1:
+                        # print(num, box_column, column_num)
+                        for i in range(9):
+                            if i not in column_lines:
+                                if sudoku[i][box_column + column_num]['options'][num]:
+                                    print_sudoku()
+                                    print(i, box_column + column_num, num)
+                                # print(box_column + column_num, i, sudoku[i][box_column + column_num]['options'][num])
+                                sudoku[i][box_column + column_num]['options'][num] = False
 
 
 ittrs = 100
@@ -183,11 +215,11 @@ while not is_solved() and ittrs > 0:
                     sudoku[i][j]['val'] = option
                     update_surrounding_options(i, j)
                     break
+    check_for_squares_in_line()
 
 
-# check_next_square(0, 0)
 print_sudoku()
-check_for_squares_in_line()
+print_options()
 
 
 def print_errors():
