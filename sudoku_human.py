@@ -225,4 +225,4 @@ def print_errors():
             if sudoku[i][j]["original"] and sudoku[i][j]["original"] != sudoku[i][j]["val"]:
                 print(i, j)
 
-# print_errors()
+print_errors()
